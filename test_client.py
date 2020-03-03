@@ -103,6 +103,8 @@ def room_screen(stdscr):
         data = {"x":player_x, "y":player_y}
         r = requests.post("http://127.0.0.1:8000/api/adv/get_room",
                             json=data, headers=headers)
+        if r.status_code not in [200, 201]:
+            print(r.status_code)
         response = json.loads(r.text)
 
         # sync player location
@@ -148,8 +150,10 @@ def room_screen(stdscr):
 
         # Display other players
         for i in response['players'].keys():
-            stdscr.addch(response['players'][i]['y'], response['players'][i]['x'], 'a')
-
+            try:
+                stdscr.addch(response['players'][i]['y'], response['players'][i]['x'], 'a')
+            except:
+                pass
 
         # Print rest of text
         stdscr.addstr(start_y + 1, start_x_subtitle, subtitle)
