@@ -42,9 +42,10 @@ def move_rooms():
         print(response['title'])
         print(response['description'])
         print(response['players'])
-        if 'room_array' in response.keys():
-            for i in response['room_array']:
-                print(''.join(i))
+        ## Display map, poorly
+        # if 'room_array' in response.keys():
+        #     for i in response['room_array']:
+        #         print(''.join(i))
 
 
 #initialize room screen
@@ -133,7 +134,13 @@ def room_screen(stdscr):
         stdscr.addstr(height-2, len(statusbarstr), " " * (width - len(statusbarstr) - 1))
         stdscr.attroff(curses.color_pair(3))
 
-        # Show players in current room
+        # Display map objects
+        for _y, row in enumerate(response['room_array']):
+            for _x, char in enumerate(row):
+                if row[_x] != '█':
+                    stdscr.addch(_y, _x, char[:1])
+
+        # List players in current room
         players_list = "Players: {}".format(', '.join(response['players']))
         stdscr.addstr(29, 0, players_list[:width-1], curses.color_pair(1))
 
@@ -147,6 +154,7 @@ def room_screen(stdscr):
         # Turning off attributes for title
         stdscr.attroff(curses.color_pair(2))
         stdscr.attroff(curses.A_BOLD)
+
 
         # Display other players
         for i in response['players'].keys():
