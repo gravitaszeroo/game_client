@@ -3,6 +3,9 @@ import requests
 import json
 import keyboard
 from curses import wrapper
+from time import sleep
+
+FPS = 60
 
 # register user
 username = input("username?")
@@ -63,6 +66,9 @@ def room_screen(stdscr):
     stdscr.clear()
     stdscr.refresh()
 
+    # Don't wait for keypresses
+    stdscr.nodelay(True)
+
     # Start colors in curses
     curses.start_color()
     curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)
@@ -75,6 +81,8 @@ def room_screen(stdscr):
         stdscr.clear()
 
         # TODO: add compensation for lag
+
+
 
         if keypress == curses.KEY_DOWN:
             player_y = player_y + 1
@@ -114,6 +122,8 @@ def room_screen(stdscr):
         # Show width and height
         whstr = "Width: {}, Height: {}".format(width, height)
         stdscr.addstr(0, 0, whstr, curses.color_pair(1))
+        # show keypress
+        stdscr.addstr(1, 0, str(keypress), curses.color_pair(1))
 
         # Render status bar
         stdscr.attron(curses.color_pair(3))
@@ -150,8 +160,10 @@ def room_screen(stdscr):
         # Refresh the screen
         stdscr.refresh()
 
-        # Wait for next input
+        # get next input, restricting to FPS
+        sleep(1/FPS)
         keypress = stdscr.getch()
+
 
 move_rooms()
 
