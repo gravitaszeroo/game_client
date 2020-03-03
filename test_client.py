@@ -137,7 +137,7 @@ def room_screen(stdscr):
         # Display map objects
         for _y, row in enumerate(response['room_array']):
             for _x, char in enumerate(row):
-                if row[_x] != '█':
+                if row[_x] != '`':
                     stdscr.addch(_y, _x, char[:1])
 
         # List players in current room
