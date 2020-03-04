@@ -7,22 +7,35 @@ from time import sleep
 
 FPS = 60
 
-# register user
-username = input("username?")
+# specify username
+username = input("username? >")
 
 body = {"username":username,
  "password1":"testpassword",
  "password2":"testpassword"}
 
+# connect to a server
+server_choice = None
+
+hosts = {
+"local":"http://127.0.0.1:8000",
+"web":"https://mudserver.herokuapp.com"
+}
+
+while server_choice not in hosts.keys():
+    server_choice = input("Which Server? (local/web) >")
+host = hosts[server_choice]
+
+# register user
 headers = {"Content-Type":"application/json"}
-r = requests.post("http://127.0.0.1:8000/api/registration/", data=body)
+r = requests.post(host+"/api/registration/", data=body)
 print(r.status_code)
 response = json.loads(r.text)
 key = response['key']
 
 # start game
 headers = {"Authorization":f"Token {key}"}
-s = requests.get('http://127.0.0.1:8000/api/adv/init/', headers=headers)
+s = requests.get(host+"/api/adv/init/", headers=headers)
 print(s.status_code)
 print(s.text)
 
@@ -101,7 +114,7 @@ def room_screen(stdscr):
 
         # Update the server, get room
         data = {"x":player_x, "y":player_y}
-        r = requests.post("http://127.0.0.1:8000/api/adv/get_room",
+        r = requests.post(host+"/api/adv/get_room",
                             json=data, headers=headers)
         if r.status_code not in [200, 201]:
             print(r.status_code)
