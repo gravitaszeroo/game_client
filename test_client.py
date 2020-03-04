@@ -26,27 +26,26 @@ s = requests.get('http://127.0.0.1:8000/api/adv/init/', headers=headers)
 print(s.status_code)
 print(s.text)
 
-# move rooms
-def move_rooms():
-    while True:
-        direction = "empty"
-        while direction.lower() not in ['n', 's', 'e', 'w', 'room']:
-            direction = str(input("N/S/E/W/room >>> ")).lower()
-        if direction == 'room':
-            # TODO: put doors in rooms and remove the above 4 lines
-            wrapper(room_screen)
-        body = {'direction':str(direction)}
-        m = requests.post('http://127.0.0.1:8000/api/adv/move/', data=json.dumps(body), headers=headers)
-        print(m.status_code)
-        response = json.loads(m.text)
-        print(response['title'])
-        print(response['description'])
-        print(response['players'])
-        ## Display map, poorly
-        # if 'room_array' in response.keys():
-        #     for i in response['room_array']:
-        #         print(''.join(i))
-
+# # move rooms (Deprecated)
+# def move_rooms():
+#     while True:
+#         direction = "empty"
+#         while direction.lower() not in ['n', 's', 'e', 'w', 'room']:
+#             direction = str(input("N/S/E/W/room >>> ")).lower()
+#         if direction == 'room':
+#             # TODO: put doors in rooms and remove the above 4 lines
+#             wrapper(room_screen)
+#         body = {'direction':str(direction)}
+#         m = requests.post('http://127.0.0.1:8000/api/adv/move/', data=json.dumps(body), headers=headers)
+#         print(m.status_code)
+#         response = json.loads(m.text)
+#         print(response['title'])
+#         print(response['description'])
+#         print(response['players'])
+#         ## Display map, poorly
+#         # if 'room_array' in response.keys():
+#         #     for i in response['room_array']:
+#         #         print(''.join(i))
 
 #initialize room screen
 def room_screen(stdscr):
@@ -176,8 +175,7 @@ def room_screen(stdscr):
         sleep(1/FPS)
         keypress = stdscr.getch()
 
-
-move_rooms()
+wrapper(room_screen)
 
 ## Debug code (can be deleted)
 # player_x = 0
