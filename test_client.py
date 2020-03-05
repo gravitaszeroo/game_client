@@ -193,12 +193,14 @@ def room_screen(stdscr):
 
 try:
     wrapper(room_screen)
-except:
+except Exception as e:
     # Show the user how to resize their terminal window
+    print(e)
     print("-" * (ROOM_WIDTH+1))
     for i in range(ROOM_HEIGHT+1):
         if i == ROOM_HEIGHT // 2:
             print(" "*50, "~ EMBIGGEN YOUR WINDOW ~")
+            print(" "*50, " ~ or see above error ~")
         else:
             print("|")
 
