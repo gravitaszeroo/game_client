@@ -6,6 +6,8 @@ from curses import wrapper
 from time import sleep
 
 FPS = 60
+ROOM_WIDTH = 120
+ROOM_HEIGHT = 28
 
 # specify username
 username = input("username? >")
@@ -152,6 +154,7 @@ def room_screen(stdscr):
                 if row[_x] != '`':
                     stdscr.addch(_y, _x, char[:1])
 
+
         # List players in current room
         players_list = "Players: {}".format(', '.join(response['players']))
         stdscr.addstr(29, 0, players_list[:width-1], curses.color_pair(1))
@@ -188,7 +191,17 @@ def room_screen(stdscr):
         sleep(1/FPS)
         keypress = stdscr.getch()
 
-wrapper(room_screen)
+try:
+    wrapper(room_screen)
+except:
+    # Show the user how to resize their terminal window
+    print("-" * (ROOM_WIDTH+1))
+    for i in range(ROOM_HEIGHT+1):
+        if i == ROOM_HEIGHT // 2:
+            print(" "*50, "~ EMBIGGEN YOUR WINDOW ~")
+        else:
+            print("|")
+
 
 ## Debug code (can be deleted)
 # player_x = 0
