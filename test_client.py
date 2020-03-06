@@ -5,7 +5,7 @@ import keyboard
 from curses import wrapper
 from time import sleep
 
-FPS = 60
+FPS = 5
 
 # specify username
 username = input("username? >")
@@ -19,17 +19,19 @@ server_choice = None
 
 hosts = {
 "local":"http://127.0.0.1:8000",
-"web":"https://mudserver.herokuapp.com"
+"web":"https://mudserver.herokuapp.com",
+'rob-web':"https://lambda-mud-buildweek.herokuapp.com"
 }
 
 while server_choice not in hosts.keys():
-    server_choice = input("Which Server? (local/web) >")
+    server_choice = input("Which Server? (local/web/rob-web) >")
 host = hosts[server_choice]
 
 # register user
 headers = {"Content-Type":"application/json"}
 r = requests.post(host+"/api/registration/", data=body)
 print(r.status_code)
+#import pdb; pdb.set_trace()
 response = json.loads(r.text)
 key = response['key']
 
@@ -39,28 +41,7 @@ s = requests.get(host+"/api/adv/init/", headers=headers)
 print(s.status_code)
 print(s.text)
 
-# # move rooms (Deprecated)
-# def move_rooms():
-#     while True:
-#         direction = "empty"
-#         while direction.lower() not in ['n', 's', 'e', 'w', 'room']:
-#             direction = str(input("N/S/E/W/room >>> ")).lower()
-#         if direction == 'room':
-#             # TODO: put doors in rooms and remove the above 4 lines
-#             wrapper(room_screen)
-#         body = {'direction':str(direction)}
-#         m = requests.post('http://127.0.0.1:8000/api/adv/move/', data=json.dumps(body), headers=headers)
-#         print(m.status_code)
-#         response = json.loads(m.text)
-#         print(response['title'])
-#         print(response['description'])
-#         print(response['players'])
-#         ## Display map, poorly
-#         # if 'room_array' in response.keys():
-#         #     for i in response['room_array']:
-#         #         print(''.join(i))
 
-#initialize room screen
 def room_screen(stdscr):
     # sc = curses.initscr()
     # h, w = sc.getmaxyx()
@@ -127,12 +108,13 @@ def room_screen(stdscr):
         # Declaration of strings
         title = str(response['title'])[:width-1]
         subtitle = str(response['description'])[:width-1]
+        scores = str(response['scores'])
         statusbarstr = "Press 'q' to exit | STATUS BAR | Pos: {}, {}".format(player_x, player_y)
 
         # Centering text
         start_x_title = int((width // 2) - (len(title) // 2) - len(title) % 2)
         start_x_subtitle = int((width // 2) - (len(subtitle) // 2) - len(subtitle) % 2)
-        start_y = int((height // 2) - 2)
+        start_y = int((height // 2) - 10)
 
         # Show width and height
         whstr = "Width: {}, Height: {}".format(width, height)
@@ -178,7 +160,9 @@ def room_screen(stdscr):
         # Print rest of text
         stdscr.addstr(start_y + 1, start_x_subtitle, subtitle)
         stdscr.addstr(start_y + 3, (width // 2) - 2, '-' * 4)
+        stdscr.addstr(30, 0, scores, curses.color_pair(2))
         stdscr.addch(player_y, player_x, '@')
+        
 
 
         # Refresh the screen
@@ -189,17 +173,3 @@ def room_screen(stdscr):
         keypress = stdscr.getch()
 
 wrapper(room_screen)
-
-## Debug code (can be deleted)
-# player_x = 0
-# player_y = 0
-#
-# data = {"x":player_x, "y":player_y}
-# r = requests.post("http://127.0.0.1:8000/api/adv/get_room",
-#                     json=data, headers=headers)
-# print(r.status_code)
-# print(r.text[:200])
-# response = json.loads(r.text)
-# print(response['x'])
-# print(response['y'])
-# print(response['title'])
