@@ -6,11 +6,6 @@ from curses import wrapper
 from time import sleep
 
 FPS = 5
-<<<<<<< HEAD
-=======
-ROOM_WIDTH = 120
-ROOM_HEIGHT = 28
->>>>>>> f24e9e538afffe83495d27db7d5e42bb95813509
 
 # specify username
 username = input("username? >")
