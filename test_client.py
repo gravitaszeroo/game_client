@@ -5,7 +5,7 @@ import keyboard
 from curses import wrapper
 from time import sleep
 
-FPS = 60
+FPS = 5
 ROOM_WIDTH = 120
 ROOM_HEIGHT = 28
 
@@ -118,8 +118,8 @@ def room_screen(stdscr):
         data = {"x":player_x, "y":player_y}
         r = requests.post(host+"/api/adv/get_room",
                             json=data, headers=headers)
-        if r.status_code not in [200, 201]:
-            print(r.status_code)
+        # if r.status_code not in [200, 201]:
+        #     print(r.status_code)
         response = json.loads(r.text)
 
         # sync player location
@@ -177,6 +177,15 @@ def room_screen(stdscr):
                 stdscr.addch(response['players'][i]['y'], response['players'][i]['x'], 'a')
             except:
                 pass
+
+        # Display creatures
+        for i in response['creatures'].keys():
+            try:
+                stdscr.addch(response['creatures'][i]['y'], response['creatures'][i]['x'], 'Q')
+            except Exception as e:
+                # WATCH FOR INVISIBLE MONSTERS
+                print(i)
+                raise(e)
 
         # Print rest of text
         stdscr.addstr(start_y + 1, start_x_subtitle, subtitle)
