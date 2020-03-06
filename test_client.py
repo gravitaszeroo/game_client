@@ -110,7 +110,7 @@ def room_screen(stdscr):
         # Declaration of strings
         title = str(response['title'])[:width-1]
         subtitle = str(response['description'])[:width-1]
-        scores = str(response['scores'])
+        scores = response['scores']
         statusbarstr = "Press 'q' to exit | STATUS BAR | Pos: {}, {}".format(player_x, player_y)
 
         # Centering text
@@ -144,9 +144,7 @@ def room_screen(stdscr):
                     
 
 
-        # List players in current room
-        players_list = "Players: {}".format(', '.join(response['players']))
-        stdscr.addstr(29, 0, players_list[:width-1], curses.color_pair(1))
+       
 
         # Turning on attributes for title
         stdscr.attron(curses.color_pair(2))
@@ -184,18 +182,38 @@ def room_screen(stdscr):
                 # WATCH FOR INVISIBLE MONSTERS
                 print(i)
                 raise(e)
-
+    
         # Print rest of text
-        stdscr.addstr(start_y + 1, start_x_subtitle, subtitle)
-        stdscr.addstr(start_y + 3, (width // 2) - 2, '-' * 4)
-        stdscr.addstr(30, 0, scores, curses.color_pair(2))
+        start_y +=1
+        stdscr.addstr(start_y, start_x_subtitle, subtitle)
+        start_y +=1
+        stdscr.addstr(start_y, (width // 2) - 2, '-' * 4)
+        start_y +=1
+        #stdscr.addstr(start_y, 0, str(len(scores)), curses.color_pair(2))
         stdscr.attron(curses.color_pair(6))
         stdscr.attron(curses.A_BOLD)
         stdscr.addch(player_y, player_x, '@')
         stdscr.attroff(curses.color_pair(6))
         stdscr.attroff(curses.A_BOLD)
         
+        #Print current player score
+        start_y += 1
+        stdscr.attron(curses.A_BOLD)
+        stdscr.addstr(start_y, start_x_title, "Current Score:", curses.color_pair(3))
+        stdscr.addstr(start_y, start_x_title+len("Current Score")+3, str(scores[-1]), curses.color_pair(4))
+        stdscr.attroff(curses.A_BOLD)
 
+        # List players in current room with scores
+        #players_list = "Players: {}".format(', '.join(response['players']))
+        players_list = response['players']
+        i = 0
+        start_y += 3
+        stdscr.addstr(start_y, start_x_title, "Players here:", curses.color_pair(3))
+        for player in players_list:
+            start_y += 1
+            stdscr.addstr(start_y, start_x_title, player, curses.color_pair(1))
+            stdscr.addstr(start_y, start_x_title+len(player)+2, str(scores[i]), curses.color_pair(1))
+            i +=1
 
         # Refresh the screen
         stdscr.refresh()
@@ -210,9 +228,9 @@ try:
 except Exception as e:
     # Show the user how to resize their terminal window
     print(e)
-    print("-" * (ROOM_WIDTH+1))
-    for i in range(ROOM_HEIGHT+1):
-        if i == ROOM_HEIGHT // 2:
+    print("-" * (GAME_WIDTH+1))
+    for i in range(GAME_HEIGHT+1):
+        if i == GAME_HEIGHT // 2:
             print(" "*50, "~ EMBIGGEN YOUR WINDOW ~")
             print(" "*50, " ~ or see above error ~")
         else:
