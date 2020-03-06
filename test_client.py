@@ -6,6 +6,11 @@ from curses import wrapper
 from time import sleep
 
 FPS = 5
+<<<<<<< HEAD
+=======
+ROOM_WIDTH = 120
+ROOM_HEIGHT = 28
+>>>>>>> f24e9e538afffe83495d27db7d5e42bb95813509
 
 # specify username
 username = input("username? >")
@@ -97,8 +102,8 @@ def room_screen(stdscr):
         data = {"x":player_x, "y":player_y}
         r = requests.post(host+"/api/adv/get_room",
                             json=data, headers=headers)
-        if r.status_code not in [200, 201]:
-            print(r.status_code)
+        # if r.status_code not in [200, 201]:
+        #     print(r.status_code)
         response = json.loads(r.text)
 
         # sync player location
@@ -134,6 +139,7 @@ def room_screen(stdscr):
                 if row[_x] != '`':
                     stdscr.addch(_y, _x, char[:1])
 
+
         # List players in current room
         players_list = "Players: {}".format(', '.join(response['players']))
         stdscr.addstr(29, 0, players_list[:width-1], curses.color_pair(1))
@@ -157,6 +163,15 @@ def room_screen(stdscr):
             except:
                 pass
 
+        # Display creatures
+        for i in response['creatures'].keys():
+            try:
+                stdscr.addch(response['creatures'][i]['y'], response['creatures'][i]['x'], 'Q')
+            except Exception as e:
+                # WATCH FOR INVISIBLE MONSTERS
+                print(i)
+                raise(e)
+
         # Print rest of text
         stdscr.addstr(start_y + 1, start_x_subtitle, subtitle)
         stdscr.addstr(start_y + 3, (width // 2) - 2, '-' * 4)
@@ -172,4 +187,16 @@ def room_screen(stdscr):
         sleep(1/FPS)
         keypress = stdscr.getch()
 
-wrapper(room_screen)
+try:
+    wrapper(room_screen)
+except Exception as e:
+    # Show the user how to resize their terminal window
+    print(e)
+    print("-" * (ROOM_WIDTH+1))
+    for i in range(ROOM_HEIGHT+1):
+        if i == ROOM_HEIGHT // 2:
+            print(" "*50, "~ EMBIGGEN YOUR WINDOW ~")
+            print(" "*50, " ~ or see above error ~")
+        else:
+            print("|")
+
