@@ -16,7 +16,8 @@ body = {"username":username,
 
 # connect to a server
 server_choice = None
-
+GAME_WIDTH = 60
+GAME_HEIGHT = 28
 hosts = {
 "local":"http://127.0.0.1:8000",
 "web":"https://mudserver.herokuapp.com",
@@ -52,13 +53,14 @@ def room_screen(stdscr):
     curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
     curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_BLACK)
     curses.init_pair(5, curses.COLOR_BLUE, curses.COLOR_BLACK)
+    curses.init_pair(6, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
 
     curses.curs_set(0)
     height, width = stdscr.getmaxyx()
     keypress = 'f'
-    player_x = int(width // 2)
-    player_y = int((height // 2) + 3)
+    player_x = int(GAME_WIDTH // 2)
+    player_y = int((GAME_HEIGHT // 2) + 3)
 
     # Clear and refresh the screen for a blank canvas
     stdscr.clear()
@@ -112,9 +114,9 @@ def room_screen(stdscr):
         statusbarstr = "Press 'q' to exit | STATUS BAR | Pos: {}, {}".format(player_x, player_y)
 
         # Centering text
-        start_x_title = int((width // 2) - (len(title) // 2) - len(title) % 2)
-        start_x_subtitle = int((width // 2) - (len(subtitle) // 2) - len(subtitle) % 2)
-        start_y = int((height // 2) - 10)
+        start_x_title = int(GAME_WIDTH+2)
+        start_x_subtitle = int(GAME_WIDTH+2)
+        start_y = int(2)
 
         # Show width and height
         whstr = "Width: {}, Height: {}".format(width, height)
@@ -173,7 +175,11 @@ def room_screen(stdscr):
         # Display creatures
         for i in response['creatures'].keys():
             try:
-                stdscr.addch(response['creatures'][i]['y'], response['creatures'][i]['x'], 'Q',curses.color_pair(2))
+                stdscr.attron(curses.color_pair(2))
+                stdscr.attron(curses.A_BOLD)
+                stdscr.addch(response['creatures'][i]['y'], response['creatures'][i]['x'], 'Q')
+                stdscr.attroff(curses.color_pair(2))
+                stdscr.attroff(curses.A_BOLD)
             except Exception as e:
                 # WATCH FOR INVISIBLE MONSTERS
                 print(i)
@@ -183,7 +189,11 @@ def room_screen(stdscr):
         stdscr.addstr(start_y + 1, start_x_subtitle, subtitle)
         stdscr.addstr(start_y + 3, (width // 2) - 2, '-' * 4)
         stdscr.addstr(30, 0, scores, curses.color_pair(2))
+        stdscr.attron(curses.color_pair(6))
+        stdscr.attron(curses.A_BOLD)
         stdscr.addch(player_y, player_x, '@')
+        stdscr.attroff(curses.color_pair(6))
+        stdscr.attroff(curses.A_BOLD)
         
 
 
