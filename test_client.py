@@ -214,6 +214,8 @@ def room_screen(stdscr):
             stdscr.addstr(start_y, start_x_title, player, curses.color_pair(1))
             stdscr.addstr(start_y, start_x_title+len(player)+2, str(scores[i]), curses.color_pair(1))
             i +=1
+            if i > 10:
+                break
 
         # Refresh the screen
         stdscr.refresh()
