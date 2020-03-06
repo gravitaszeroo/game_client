@@ -41,16 +41,20 @@ s = requests.get(host+"/api/adv/init/", headers=headers)
 print(s.status_code)
 print(s.text)
 
+ITEM_CHARS = ['$','€','¥']
 
 def room_screen(stdscr):
-    # sc = curses.initscr()
-    # h, w = sc.getmaxyx()
-    # win = curses.newwin(h, w, 0, 0)
-    # win.keypad(1)
-    curses.curs_set(0)
-    #
-    # stdscr.addch(1, 1, curses.ACS_DIAMOND)
 
+    # Start colors in curses
+    curses.start_color()
+    curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)
+    curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(5, curses.COLOR_BLUE, curses.COLOR_BLACK)
+
+
+    curses.curs_set(0)
     height, width = stdscr.getmaxyx()
     keypress = 'f'
     player_x = int(width // 2)
@@ -63,11 +67,7 @@ def room_screen(stdscr):
     # Don't wait for keypresses
     stdscr.nodelay(True)
 
-    # Start colors in curses
-    curses.start_color()
-    curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)
-    curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
-    curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    
 
     # move around the room
     while keypress != ord('q'):
@@ -133,6 +133,13 @@ def room_screen(stdscr):
             for _x, char in enumerate(row):
                 if row[_x] != '`':
                     stdscr.addch(_y, _x, char[:1])
+                if row[_x] in ITEM_CHARS:
+                    stdscr.attron(curses.color_pair(4))
+                    stdscr.attron(curses.A_BOLD)
+                    stdscr.addch(_y, _x, char[:1])
+                    stdscr.attroff(curses.color_pair(4))
+                    stdscr.attroff(curses.A_BOLD)
+                    
 
 
         # List players in current room
@@ -154,14 +161,19 @@ def room_screen(stdscr):
         # Display other players
         for i in response['players'].keys():
             try:
-                stdscr.addch(response['players'][i]['y'], response['players'][i]['x'], 'a')
+                stdscr.attron(curses.color_pair(5))
+                stdscr.attron(curses.A_BOLD)
+                stdscr.addch(response['players'][i]['y'], response['players'][i]['x'], '*')
+                stdscr.attroff(curses.color_pair(5))
+                stdscr.attroff(curses.A_BOLD)
+                
             except:
                 pass
 
         # Display creatures
         for i in response['creatures'].keys():
             try:
-                stdscr.addch(response['creatures'][i]['y'], response['creatures'][i]['x'], 'Q')
+                stdscr.addch(response['creatures'][i]['y'], response['creatures'][i]['x'], 'Q',curses.color_pair(2))
             except Exception as e:
                 # WATCH FOR INVISIBLE MONSTERS
                 print(i)
@@ -183,6 +195,7 @@ def room_screen(stdscr):
         keypress = stdscr.getch()
 
 try:
+
     wrapper(room_screen)
 except Exception as e:
     # Show the user how to resize their terminal window
